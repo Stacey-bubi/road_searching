@@ -26,7 +26,7 @@ model.eval()
 
 window = tk.Tk()
 window.title("Road Segmentation")
-window.geometry("1200x600")  # Установите подходящий размер окна
+window.geometry("1200x600") 
 
 input_label = tk.Label(window)
 input_label.pack()
@@ -62,7 +62,7 @@ def predict_road(image_path):
     input_label.image = input_tk
     mask_label.image = mask_tk
 
-    window.update()  # Обновляем главный цикл Tkinter
+    window.update() 
 
 def open_image():
     file_path = filedialog.askopenfilename(filetypes=[("Image files", "*.jpg;*.jpeg;*.png")])
