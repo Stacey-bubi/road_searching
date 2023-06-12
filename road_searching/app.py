@@ -20,17 +20,8 @@ preprocess_image = transforms.Compose(
 # Load the trained model
 model_path = "model.pth"    # Path to the pth
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-model = SegmentationModel(
-    encoder_name="resnet50",
-    encoder_depth=5,
-    encoder_weights=None,
-    encoder_output_stride=16,
-    in_channels=3,
-    classes=num_classes,
-    activation='sigmoid',
-    upsampling=4
-).to(device)
-model.load_state_dict(torch.load(model_path))
+model = torch.load(model_path)
+
 model.eval()
 
 window = tk.Tk()
