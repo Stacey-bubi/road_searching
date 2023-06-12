@@ -18,7 +18,7 @@ preprocess_image = transforms.Compose(
 )
 
 # Load the trained model
-model_path = "model.pth"
+model_path = "model.pth"    # Path to the pth
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = SegmentationModel(
     encoder_name="resnet50",
