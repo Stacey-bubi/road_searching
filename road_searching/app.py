@@ -3,7 +3,8 @@ from tkinter import filedialog
 from PIL import ImageTk, Image
 import torch
 import torchvision.transforms as transforms
-from model import SegmentationModel
+from segmentation_models_pytorch import DeepLabV3Plus
+import numpy as np
 
 image_size = (1024, 1024)
 num_classes = 2 
@@ -18,14 +19,14 @@ preprocess_image = transforms.Compose(
 )
 
 # Load the trained model
-model_path = "model.pth"    # Path to the pth
+model_path = "final_model.pth"
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = torch.load(model_path)
-
 model.eval()
 
 window = tk.Tk()
 window.title("Road Segmentation")
+window.geometry("1200x600")  # Установите подходящий размер окна
 
 input_label = tk.Label(window)
 input_label.pack()
@@ -40,18 +41,28 @@ def predict_road(image_path):
 
     with torch.no_grad():
         outputs = model(input_image)
-        predicted_mask = (outputs > 0.5).squeeze().cpu().numpy()
+    #    predicted_mask = (outputs > 0.5)
+        predicted_mask = torch.argmin(outputs, dim=1).squeeze(0).cpu().numpy()
 
-    mask_image = Image.fromarray((predicted_mask * 255).astype('uint8'), mode='L')
+    mask_image = Image.fromarray(np.where(predicted_mask > 0.5, 255, 0).astype('uint8'), mode='L')
     mask_image = mask_image.resize(image_size)
 
+    # Scale image and mask to fit the window
+    width, height = window.winfo_width() // 2, window.winfo_height()
+    input_image = image.resize((width, height))
+    mask_image = mask_image.resize((width, height))
+
     # Convert the input image and mask image to Tkinter-compatible format
-    input_tk = ImageTk.PhotoImage(image)
+    input_tk = ImageTk.PhotoImage(input_image)
     mask_tk = ImageTk.PhotoImage(mask_image)
+
     input_label.config(image=input_tk)
     mask_label.config(image=mask_tk)
+
     input_label.image = input_tk
     mask_label.image = mask_tk
+
+    window.update()  # Обновляем главный цикл Tkinter
 
 def open_image():
     file_path = filedialog.askopenfilename(filetypes=[("Image files", "*.jpg;*.jpeg;*.png")])
