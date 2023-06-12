@@ -47,12 +47,12 @@ def predict_road(image_path):
     mask_image = Image.fromarray(np.where(predicted_mask > 0.5, 255, 0).astype('uint8'), mode='L')
     mask_image = mask_image.resize(image_size)
 
-    # Scale image and mask to fit the window
+    
     width, height = window.winfo_width() // 2, window.winfo_height()
     input_image = image.resize((width, height))
     mask_image = mask_image.resize((width, height))
 
-    # Convert the input image and mask image to Tkinter-compatible format
+
     input_tk = ImageTk.PhotoImage(input_image)
     mask_tk = ImageTk.PhotoImage(mask_image)
 
