@@ -15,8 +15,8 @@ def apply_augmentation(image, mask, augmentation):
 
     return augmented_image, augmented_mask
 
-image = cv2.imread('/content/drive/MyDrive/Dataset/СustomDataset/train/5501_sat.jpg')
-mask = cv2.imread('/content/drive/MyDrive/Dataset/СustomDataset/train/5501_mask.png', cv2.IMREAD_GRAYSCALE)
+image = cv2.imread('..._sat.jpg')
+mask = cv2.imread('..._mask.png', cv2.IMREAD_GRAYSCALE)
 
 # Defined augmentations
 augmentations = [
