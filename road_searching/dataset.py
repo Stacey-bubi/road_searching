@@ -3,7 +3,7 @@ from imgaug import augmenters as iaa
 import cv2
 import matplotlib.pyplot as plt
 from imgaug.augmentables.segmaps import SegmentationMapOnImage
-
+import os
 
 def apply_augmentation(image, mask, augmentation):
     segmap = SegmentationMapOnImage(mask, shape=image.shape[:2])
@@ -15,9 +15,6 @@ def apply_augmentation(image, mask, augmentation):
     augmented_mask = augmented_segmap.get_arr()
 
     return augmented_image, augmented_mask
-
-image = cv2.imread('..._sat.jpg')
-mask = cv2.imread('..._mask.png', cv2.IMREAD_GRAYSCALE)
 
 # Defined augmentations
 augmentations = [
@@ -31,26 +28,25 @@ augmentations = [
 ]
 
 
-fig, axes = plt.subplots(len(augmentations) + 1, 2, figsize=(10, 12))
-axes[0, 0].imshow(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
-axes[0, 0].set_title('Original Image')
-axes[0, 1].imshow(mask, cmap='gray')
-axes[0, 1].set_title('Original Mask')
+image_path = 'aimages'
+mask_path = 'amasks'
 
-for i, (augmentation, technique) in enumerate(augmentations):
-    augmented_image, augmented_mask = apply_augmentation(image, mask, augmentation)
-    # Display
-    axes[i+1, 0].imshow(cv2.cvtColor(augmented_image, cv2.COLOR_BGR2RGB))
-    axes[i+1, 0].set_title(f'Augmented Image {i+1}\n({technique})')
-    axes[i+1, 1].imshow(augmented_mask, cmap='gray')
-    axes[i+1, 1].set_title(f'Augmented Mask {i+1}\n({technique})')
+output_path = 'augmented'
 
-for ax in axes.flatten():
-    ax.axis('off')
+if not os.path.exists(output_path):
+    os.makedirs(output_path)
 
-plt.tight_layout()
+image_files = os.listdir(image_path)
+mask_files = os.listdir(mask_path)
 
-# Saved the figure with high resolution
-plt.savefig('augmented_images.png', dpi=300)
-plt.show()
+for image_file, mask_file in zip(image_files, mask_files):
+    image = cv2.imread(image_path + image_file)
+    mask = cv2.imread(mask_path + mask_file, cv2.IMREAD_GRAYSCALE)
+
+    # Looping through each augmentation technique
+    for i, (augmentation, technique) in enumerate(augmentations):
+        augmented_image, augmented_mask = apply_augmentation(image, mask, augmentation)
+
+        cv2.imwrite(output_path + f'{image_file[:-4]}_{technique}.jpg', augmented_image)
+        cv2.imwrite(output_path + f'{mask_file[:-4]}_{technique}.png', augmented_mask)
 
